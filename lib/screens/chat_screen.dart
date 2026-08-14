@@ -13,15 +13,24 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
 
+  // void _sendMessage() {
+  //   final text = _controller.text.trim();
+
+  //   if (text.isEmpty) return;
+
+  //   ref.read(chatProvider.notifier).sendMessage(text);
+
+  //   _controller.clear();
+  // }
   void _sendMessage() {
-    final text = _controller.text.trim();
+  final text = _controller.text.trim();
 
-    if (text.isEmpty) return;
+  if (text.isEmpty) return;
 
-    ref.read(chatProvider.notifier).sendMessage(text);
+  ref.read(chatProvider.notifier).sendMessage(text);
 
-    _controller.clear();
-  }
+  _controller.clear();
+}
 
   @override
   void dispose() {
@@ -31,7 +40,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final messages = ref.watch(chatProvider);
+    // final messages = ref.watch(chatProvider);
+    final chatState = ref.watch(chatProvider);
+    final messages = chatState.messages;
 
     return Scaffold(
       appBar: AppBar(
@@ -74,6 +85,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
           ),
 
+        if (chatState.isLoading)
+          const Padding(
+            padding: EdgeInsets.only(bottom: 8),
+            child: Text(
+              'Thinking...',
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -92,7 +113,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 const SizedBox(width: 8),
 
                 IconButton(
-                  onPressed: _sendMessage,
+                  onPressed: chatState.isLoading ? null : _sendMessage,
                   icon: const Icon(Icons.send),
                 ),
               ],

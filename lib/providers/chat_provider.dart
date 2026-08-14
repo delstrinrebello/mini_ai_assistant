@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../services/ai_service.dart';
+
 class ChatMessage {
   final String text;
   final bool isUser;
@@ -10,34 +12,69 @@ class ChatMessage {
   });
 }
 
-class ChatNotifier extends Notifier<List<ChatMessage>> {
+class ChatState {
+  final List<ChatMessage> messages;
+  final bool isLoading;
+
+  ChatState({
+    required this.messages,
+    this.isLoading = false,
+  });
+}
+
+class ChatNotifier extends Notifier<ChatState> {
+  final AiService _aiService = AiService();
+
   @override
-  List<ChatMessage> build() {
-    return [];
+  ChatState build() {
+    return ChatState(
+      messages: [],
+    );
   }
 
-  void sendMessage(String text) {
-    if (text.trim().isEmpty) return;
+  Future<void> sendMessage(String text) async {
+    if (text.trim().isEmpty || state.isLoading) return;
 
-    state = [
-      ...state,
-      ChatMessage(
-        text: text,
-        isUser: true,
-      ),
-    ];
+    state = ChatState(
+      messages: [
+        ...state.messages,
+        ChatMessage(
+          text: text,
+          isUser: true,
+        ),
+      ],
+      isLoading: true,
+    );
 
-    state = [
-      ...state,
-      ChatMessage(
-        text: 'You said: $text',
-        isUser: false,
-      ),
-    ];
+    try {
+      final response = await _aiService.sendMessage(text);
+
+      state = ChatState(
+        messages: [
+          ...state.messages,
+          ChatMessage(
+            text: response,
+            isUser: false,
+          ),
+        ],
+        isLoading: false,
+      );
+    } catch (e) {
+      state = ChatState(
+        messages: [
+          ...state.messages,
+          ChatMessage(
+            text: 'Something went wrong.',
+            isUser: false,
+          ),
+        ],
+        isLoading: false,
+      );
+    }
   }
 }
 
 final chatProvider =
-    NotifierProvider<ChatNotifier, List<ChatMessage>>(
+    NotifierProvider<ChatNotifier, ChatState>(
   ChatNotifier.new,
 );
