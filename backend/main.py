@@ -27,39 +27,6 @@
 #     }
 
 
-##################################################################################################
-
-
-# from fastapi import FastAPI
-# from pydantic import BaseModel
-# import requests
-
-# app = FastAPI()
-
-
-# class ChatRequest(BaseModel):
-#     message: str
-
-
-# @app.post("/chat")
-# def chat(request: ChatRequest):
-
-#     response = requests.post(
-#         "http://localhost:11434/api/generate",
-#         json={
-#             "model": "llama3.2:3b",
-#             "prompt": request.message,
-#             "stream": False,
-#         },
-#     )
-
-#     data = response.json()
-
-#     return {
-#         "response": data["response"]
-#     }
-
-
 ###############################################################################################
 
 # FastAPI + LLM + MCP client
@@ -84,11 +51,11 @@ async def chat_endpoint(request: ChatRequest):
 
     async with Client(MCP_SERVER_URL) as mcp_client:
 
-        # 1. Get tools from MCP
+        # Get tools from MCP
         result = await mcp_client.list_tools()
         tools = result.tools
 
-        # 2. Convert MCP tools to Ollama format
+        # Convert MCP tools to Ollama format
         ollama_tools = []
 
         for tool in tools:
@@ -101,7 +68,7 @@ async def chat_endpoint(request: ChatRequest):
                 },
             })
 
-        # 3. Send user's message to Llama
+        # Send user's message to Llama
         messages = [
             {
                 "role": "user",
@@ -117,13 +84,13 @@ async def chat_endpoint(request: ChatRequest):
 
         message = response.message
 
-        # 4. Check if Llama wants to use an MCP tool
+        # Check if Llama wants to use an MCP tool
         if message.tool_calls:
 
             # Add Llama's tool request to the conversation
             messages.append(message)
 
-            # 5. Execute requested MCP tools
+            # Execute requested MCP tools
             for tool_call in message.tool_calls:
 
                 tool_name = tool_call.function.name
@@ -150,13 +117,13 @@ async def chat_endpoint(request: ChatRequest):
 
                 print(f"MCP result: {result_text}")
 
-                # 6. Send tool result back to Llama
+                # Send tool result back to Llama
                 messages.append({
                     "role": "tool",
                     "content": result_text,
                 })
 
-            # 7. Ask Llama for the final answer
+            # Ask Llama for the final answer
             final_response = chat(
                 model=OLLAMA_MODEL,
                 messages=messages,
