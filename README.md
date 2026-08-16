@@ -1,20 +1,18 @@
 # Mini AI Assistant
 
-A simple AI assistant built with Flutter, FastAPI, Ollama, and Model Context Protocol (MCP).
+A simple AI assistant built with Flutter and a Python backend.
 
-## Architecture
+The app uses Ollama to run a local Llama 3.2 model and MCP (Model Context Protocol) to give the AI access to tools.
 
-Flutter
-   ↓
-FastAPI
-   ↓
-Ollama / Llama 3.2
-   ↓
-MCP Client
-   ↓
-MCP Server
-   ↓
-Tools
+## Features
+
+- Flutter chat interface
+- Riverpod state management
+- FastAPI backend
+- Local LLM with Ollama
+- Llama 3.2 3B
+- MCP client and server
+- Calculator tool
 
 ## Technologies
 
@@ -25,47 +23,66 @@ Tools
 - FastAPI
 - Ollama
 - Llama 3.2
-- Model Context Protocol (MCP)
+- MCP
 
-## Features
+## How It Works
 
-- Chat interface built with Flutter
-- Local LLM using Ollama
-- MCP tool discovery
-- MCP calculator tool
-- Automatic LLM tool calling
-- FastAPI backend
+The Flutter app sends messages to the FastAPI backend. The backend communicates with the local Llama model through Ollama.
 
-## Current MCP Tools
+When the AI needs to perform a calculation, it can use the calculator tool provided by the MCP server.
 
-### Calculator
+For example:
 
-The assistant can use the MCP calculator tool for operations such as:
+```text
+What is 25 multiplied by 18?
 
-- Addition
-- Subtraction
-- Multiplication
-- Division
-
-Example:
-
-User:
-"What is 5 multiplied by 7?"
-
-Assistant:
-"The result of multiplying 5 and 7 is 35."
+25 × 18 = 450
+```
 
 ## Running the Project
 
 ### Backend
 
-Create a virtual environment:
+Create and activate a virtual environment:
 
-```bash
+```powershell
+cd backend
 python -m venv venv
+venv\Scripts\activate
+```
 
+Install the dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Install the Ollama model:
+
+```powershell
 ollama pull llama3.2:3b
+```
 
+Start the MCP server:
+
+```powershell
 python mcp_server.py
+```
 
+In another terminal, start FastAPI:
+
+```powershell
+cd backend
+venv\Scripts\activate
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Flutter
+
+From the project root:
+
+```powershell
+flutter pub get
+flutter run
+```
+
