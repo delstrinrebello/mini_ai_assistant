@@ -1,17 +1,88 @@
-# mini_ai_assistant
+# Mini AI Assistant
 
-A new Flutter project.
+A simple AI assistant built with Flutter and a Python backend.
 
-## Getting Started
+The app uses Ollama to run a local Llama 3.2 model and MCP (Model Context Protocol) to give the AI access to tools.
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter chat interface
+- Riverpod state management
+- FastAPI backend
+- Local LLM with Ollama
+- Llama 3.2 3B
+- MCP client and server
+- Calculator tool
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Technologies
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter
+- Dart
+- Riverpod
+- Python
+- FastAPI
+- Ollama
+- Llama 3.2
+- MCP
+
+## How It Works
+
+The Flutter app sends messages to the FastAPI backend. The backend communicates with the local Llama model through Ollama.
+
+When the AI needs to perform a calculation, it can use the calculator tool provided by the MCP server.
+
+For example:
+
+```text
+What is 25 multiplied by 18?
+
+25 × 18 = 450
+```
+
+## Running the Project
+
+### Backend
+
+Create and activate a virtual environment:
+
+```powershell
+cd backend
+python -m venv venv
+venv\Scripts\activate
+```
+
+Install the dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Install the Ollama model:
+
+```powershell
+ollama pull llama3.2:3b
+```
+
+Start the MCP server:
+
+```powershell
+python mcp_server.py
+```
+
+In another terminal, start FastAPI:
+
+```powershell
+cd backend
+venv\Scripts\activate
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Flutter
+
+From the project root:
+
+```powershell
+flutter pub get
+flutter run
+```
+
